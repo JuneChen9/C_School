@@ -1,0 +1,22 @@
+{
+  "5_minutes/Commercial": {
+    "status": "failed",
+    "end_time": "2026-01-18 19:46:05",
+    "error": "GradScaler.__init__() got an unexpected keyword argument 'device_type'"
+  },
+  "5_minutes/Office": {
+    "status": "failed",
+    "end_time": "2026-01-18 19:46:05",
+    "error": "GradScaler.__init__() got an unexpected keyword argument 'device_type'"
+  },
+  "5_minutes/Public": {
+    "status": "failed",
+    "end_time": "2026-01-18 19:46:06",
+    "error": "GradScaler.__init__() got an unexpected keyword argument 'device_type'"
+  },
+  "5_minutes/Residential": {
+    "status": "failed",
+    "end_time": "2026-01-18 19:46:06",
+    "error": "GradScaler.__init__() got an unexpected keyword argument 'device_type'"
+  }
+}

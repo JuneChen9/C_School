@@ -1,0 +1,54 @@
+{
+  "model": "PatchTST",
+  "resolution": "30_minutes",
+  "building": "Commercial",
+  "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\30_minutes\\Commercial",
+  "window": {
+    "input_len": 336,
+    "pred_len": 48
+  },
+  "patch": {
+    "patch_len": 24,
+    "stride": 12,
+    "n_patches": 27
+  },
+  "model_cfg": {
+    "d_model": 256,
+    "n_heads": 8,
+    "n_layers": 6,
+    "d_ff": 512
+  },
+  "train_cfg": {
+    "epochs": 30,
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "dropout": 0.1,
+    "d_model": 256,
+    "n_heads": 8,
+    "n_layers": 6,
+    "d_ff": 512,
+    "grad_clip": 1.0,
+    "patience": 6,
+    "num_workers": 2,
+    "save_every": 1,
+    "grad_checkpoint": false
+  },
+  "best_val_loss_scaled": 0.047769461458517334,
+  "val_metrics": {
+    "MAE": 53.83660125732422,
+    "RMSE": 72.7706527709961,
+    "MAPE": 0.09782501310110092
+  },
+  "test_metrics": {
+    "MAE": 64.45967102050781,
+    "RMSE": 87.88269805908203,
+    "MAPE": 0.0903548076748848
+  },
+  "micro_batch": 64,
+  "effective_batch": 64,
+  "accum_steps": 1,
+  "timestamp": "2026-01-18 22:42:02",
+  "exports": {}
+}

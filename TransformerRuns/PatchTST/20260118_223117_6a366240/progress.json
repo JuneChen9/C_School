@@ -1,0 +1,62 @@
+{
+  "1_hour/Commercial": {
+    "status": "done",
+    "end_time": "2026-01-18 22:32:33",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\1_hour\\Commercial\\metrics.json"
+  },
+  "1_hour/Office": {
+    "status": "done",
+    "end_time": "2026-01-18 22:35:19",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\1_hour\\Office\\metrics.json"
+  },
+  "1_hour/Public": {
+    "status": "done",
+    "end_time": "2026-01-18 22:37:13",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\1_hour\\Public\\metrics.json"
+  },
+  "1_hour/Residential": {
+    "status": "done",
+    "end_time": "2026-01-18 22:39:35",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\1_hour\\Residential\\metrics.json"
+  },
+  "30_minutes/Commercial": {
+    "status": "done",
+    "end_time": "2026-01-18 22:42:03",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\30_minutes\\Commercial\\metrics.json"
+  },
+  "30_minutes/Office": {
+    "status": "done",
+    "end_time": "2026-01-18 22:45:37",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\30_minutes\\Office\\metrics.json"
+  },
+  "30_minutes/Public": {
+    "status": "done",
+    "end_time": "2026-01-18 22:47:55",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\30_minutes\\Public\\metrics.json"
+  },
+  "30_minutes/Residential": {
+    "status": "done",
+    "end_time": "2026-01-18 22:50:05",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\30_minutes\\Residential\\metrics.json"
+  },
+  "5_minutes/Commercial": {
+    "status": "done",
+    "end_time": "2026-01-18 23:05:19",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\5_minutes\\Commercial\\metrics.json"
+  },
+  "5_minutes/Office": {
+    "status": "done",
+    "end_time": "2026-01-18 23:34:21",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\5_minutes\\Office\\metrics.json"
+  },
+  "5_minutes/Public": {
+    "status": "done",
+    "end_time": "2026-01-18 23:50:47",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\5_minutes\\Public\\metrics.json"
+  },
+  "5_minutes/Residential": {
+    "status": "done",
+    "end_time": "2026-01-19 00:10:35",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\TransformerRuns\\PatchTST\\20260118_223117_6a366240\\5_minutes\\Residential\\metrics.json"
+  }
+}

@@ -1,0 +1,650 @@
+[
+  {
+    "model": "PatchTST",
+    "resolution": "1_hour",
+    "building": "Commercial",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\1_hour\\Commercial",
+    "window": {
+      "input_len": 168,
+      "pred_len": 24
+    },
+    "patch": {
+      "patch_len": 12,
+      "stride": 6,
+      "n_patches": 27
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.05943523049354553,
+    "val_metrics": {
+      "MAE": 60.44007873535156,
+      "RMSE": 80.623046875,
+      "MAPE": 0.10938083380460739
+    },
+    "test_metrics": {
+      "MAE": 72.5531997680664,
+      "RMSE": 103.77978515625,
+      "MAPE": 0.10058372467756271
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 22:32:31",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "1_hour",
+    "building": "Office",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\1_hour\\Office",
+    "window": {
+      "input_len": 168,
+      "pred_len": 24
+    },
+    "patch": {
+      "patch_len": 12,
+      "stride": 6,
+      "n_patches": 27
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.043654063468178114,
+    "val_metrics": {
+      "MAE": 57.57416534423828,
+      "RMSE": 103.73871612548828,
+      "MAPE": 0.12913914024829865
+    },
+    "test_metrics": {
+      "MAE": 90.96288299560547,
+      "RMSE": 146.2910919189453,
+      "MAPE": 0.27862393856048584
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 22:35:18",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "1_hour",
+    "building": "Public",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\1_hour\\Public",
+    "window": {
+      "input_len": 168,
+      "pred_len": 24
+    },
+    "patch": {
+      "patch_len": 12,
+      "stride": 6,
+      "n_patches": 27
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.034477309634288154,
+    "val_metrics": {
+      "MAE": 31.603694915771484,
+      "RMSE": 45.50297546386719,
+      "MAPE": 0.17269764840602875
+    },
+    "test_metrics": {
+      "MAE": 34.67103576660156,
+      "RMSE": 51.51634216308594,
+      "MAPE": 0.17262479662895203
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 22:37:11",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "1_hour",
+    "building": "Residential",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\1_hour\\Residential",
+    "window": {
+      "input_len": 168,
+      "pred_len": 24
+    },
+    "patch": {
+      "patch_len": 12,
+      "stride": 6,
+      "n_patches": 27
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.05325403992707531,
+    "val_metrics": {
+      "MAE": 23.490934371948242,
+      "RMSE": 33.16786193847656,
+      "MAPE": 0.09410379081964493
+    },
+    "test_metrics": {
+      "MAE": 26.252315521240234,
+      "RMSE": 38.814125061035156,
+      "MAPE": 0.08788001537322998
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 22:39:33",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "30_minutes",
+    "building": "Commercial",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\30_minutes\\Commercial",
+    "window": {
+      "input_len": 336,
+      "pred_len": 48
+    },
+    "patch": {
+      "patch_len": 24,
+      "stride": 12,
+      "n_patches": 27
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.047769461458517334,
+    "val_metrics": {
+      "MAE": 53.83660125732422,
+      "RMSE": 72.7706527709961,
+      "MAPE": 0.09782501310110092
+    },
+    "test_metrics": {
+      "MAE": 64.45967102050781,
+      "RMSE": 87.88269805908203,
+      "MAPE": 0.0903548076748848
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 22:42:02",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "30_minutes",
+    "building": "Office",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\30_minutes\\Office",
+    "window": {
+      "input_len": 336,
+      "pred_len": 48
+    },
+    "patch": {
+      "patch_len": 24,
+      "stride": 12,
+      "n_patches": 27
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.04298879038858212,
+    "val_metrics": {
+      "MAE": 58.573421478271484,
+      "RMSE": 101.33053588867188,
+      "MAPE": 0.1334337592124939
+    },
+    "test_metrics": {
+      "MAE": 80.43699645996094,
+      "RMSE": 130.97377014160156,
+      "MAPE": 0.2523977756500244
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 22:45:35",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "30_minutes",
+    "building": "Public",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\30_minutes\\Public",
+    "window": {
+      "input_len": 336,
+      "pred_len": 48
+    },
+    "patch": {
+      "patch_len": 24,
+      "stride": 12,
+      "n_patches": 27
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.03340827937285274,
+    "val_metrics": {
+      "MAE": 31.63233757019043,
+      "RMSE": 45.46866989135742,
+      "MAPE": 0.17202261090278625
+    },
+    "test_metrics": {
+      "MAE": 34.243186950683594,
+      "RMSE": 52.67228698730469,
+      "MAPE": 0.155324786901474
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 22:47:53",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "30_minutes",
+    "building": "Residential",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\30_minutes\\Residential",
+    "window": {
+      "input_len": 336,
+      "pred_len": 48
+    },
+    "patch": {
+      "patch_len": 24,
+      "stride": 12,
+      "n_patches": 27
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.04259588332625769,
+    "val_metrics": {
+      "MAE": 21.34699821472168,
+      "RMSE": 28.995925903320312,
+      "MAPE": 0.08423934131860733
+    },
+    "test_metrics": {
+      "MAE": 22.03392791748047,
+      "RMSE": 33.5845832824707,
+      "MAPE": 0.0741487368941307
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 22:50:04",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "5_minutes",
+    "building": "Commercial",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\5_minutes\\Commercial",
+    "window": {
+      "input_len": 2016,
+      "pred_len": 288
+    },
+    "patch": {
+      "patch_len": 32,
+      "stride": 16,
+      "n_patches": 125
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.0567069243446564,
+    "val_metrics": {
+      "MAE": 57.03390884399414,
+      "RMSE": 79.10933685302734,
+      "MAPE": 0.10082275420427322
+    },
+    "test_metrics": {
+      "MAE": 65.99520111083984,
+      "RMSE": 92.50511169433594,
+      "MAPE": 0.15683647990226746
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 23:05:18",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "5_minutes",
+    "building": "Office",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\5_minutes\\Office",
+    "window": {
+      "input_len": 2016,
+      "pred_len": 288
+    },
+    "patch": {
+      "patch_len": 32,
+      "stride": 16,
+      "n_patches": 125
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.04358824413363684,
+    "val_metrics": {
+      "MAE": 55.04966354370117,
+      "RMSE": 102.19963836669922,
+      "MAPE": 0.12417203187942505
+    },
+    "test_metrics": {
+      "MAE": 102.23731994628906,
+      "RMSE": 165.60101318359375,
+      "MAPE": 0.31455543637275696
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 23:34:19",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "5_minutes",
+    "building": "Public",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\5_minutes\\Public",
+    "window": {
+      "input_len": 2016,
+      "pred_len": 288
+    },
+    "patch": {
+      "patch_len": 32,
+      "stride": 16,
+      "n_patches": 125
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.03248977300377605,
+    "val_metrics": {
+      "MAE": 31.98431968688965,
+      "RMSE": 44.74995803833008,
+      "MAPE": 0.1850588321685791
+    },
+    "test_metrics": {
+      "MAE": 34.63418197631836,
+      "RMSE": 51.70293426513672,
+      "MAPE": 0.16811101138591766
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-18 23:50:46",
+    "exports": {}
+  },
+  {
+    "model": "PatchTST",
+    "resolution": "5_minutes",
+    "building": "Residential",
+    "series_dir": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\5_minutes\\Residential",
+    "window": {
+      "input_len": 2016,
+      "pred_len": 288
+    },
+    "patch": {
+      "patch_len": 32,
+      "stride": 16,
+      "n_patches": 125
+    },
+    "model_cfg": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512
+    },
+    "train_cfg": {
+      "epochs": 30,
+      "micro_batch": 64,
+      "effective_batch": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "dropout": 0.1,
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 6,
+      "d_ff": 512,
+      "grad_clip": 1.0,
+      "patience": 6,
+      "num_workers": 2,
+      "save_every": 1,
+      "grad_checkpoint": false
+    },
+    "best_val_loss_scaled": 0.037429101603761825,
+    "val_metrics": {
+      "MAE": 19.336530685424805,
+      "RMSE": 27.2347412109375,
+      "MAPE": 0.07427234947681427
+    },
+    "test_metrics": {
+      "MAE": 22.517343521118164,
+      "RMSE": 32.51405334472656,
+      "MAPE": 0.07459712773561478
+    },
+    "micro_batch": 64,
+    "effective_batch": 64,
+    "accum_steps": 1,
+    "timestamp": "2026-01-19 00:10:33",
+    "exports": {}
+  }
+]

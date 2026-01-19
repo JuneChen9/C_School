@@ -2,10 +2,12 @@
 """
 PatchTST training for ElectricPowerLoadData (AfterWash).
 
-Fixes:
+Features:
 1) Fail-fast if user requests CUDA but current torch is CPU-only.
 2) Separate outputs for different model structures / hyperparams via run_tag + config hash:
    out_root/<model_name>/<run_tag>/<resolution>/<building>/...
+3) Export prediction sequences (y_true/y_pred + timestamps) to NPZ and plot PNG curves:
+   <run_dir>/preds/{val_samples.npz,test_samples.npz} and <run_dir>/preds/plots/*.png
 
 Compatibility:
 - --batch_size (alias of --micro_batch)
@@ -18,7 +20,7 @@ import os
 
 # New env var name (PyTorch recommends PYTORCH_ALLOC_CONF)
 os.environ.setdefault("PYTORCH_ALLOC_CONF", "max_split_size_mb:128,garbage_collection_threshold:0.8")
-# Keep old name as fallback for older PyTorch (won't hurt)
+# Keep old name as fallback for older PyTorch
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", os.environ.get("PYTORCH_ALLOC_CONF", ""))
 
 import argparse
@@ -29,7 +31,7 @@ import sys
 import time
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -42,6 +44,8 @@ from torch.utils.data import Dataset, DataLoader
 from torch.utils.checkpoint import checkpoint as ckpt
 
 from sklearn.preprocessing import StandardScaler
+
+import matplotlib.pyplot as plt
 
 
 # -----------------------------
@@ -98,7 +102,6 @@ def cuda_cleanup():
 def print_env_banner():
     print("PY:", sys.executable)
     print("TORCH:", torch.__version__)
-    # torch.backends.cuda.is_built() exists on CUDA builds
     try:
         built = torch.backends.cuda.is_built()
     except Exception:
@@ -142,17 +145,13 @@ class NullScaler:
 
 
 def make_grad_scaler(use_amp: bool):
-    """
-    PyTorch 2.9.x: torch.amp.GradScaler does NOT accept device_type kwarg.
-    The most compatible choice for CUDA AMP is torch.cuda.amp.GradScaler.
-    """
+    # PyTorch 2.9.x: torch.amp.GradScaler does NOT accept device_type kwarg.
     if use_amp:
         return torch.cuda.amp.GradScaler(enabled=True)
     return NullScaler()
 
 
 def autocast_ctx(device: torch.device, use_amp: bool):
-    # If AMP disabled, this context is effectively a no-op.
     dev_type = "cuda" if device.type == "cuda" else "cpu"
     return torch.amp.autocast(device_type=dev_type, dtype=torch.float16, enabled=use_amp)
 
@@ -246,12 +245,21 @@ def load_split_files(series_dir: Path) -> Tuple[pd.DataFrame, pd.DataFrame, pd.D
 
 
 class SlidingWindowDataset(Dataset):
-    def __init__(self, values_scaled_1d: np.ndarray, time_feats: np.ndarray, input_len: int, pred_len: int):
+    """
+    x_past: [input_len, C]  C = 1(value) + F(time_feats)
+    y_future: [pred_len]
+    Also stores dt array so we can export timestamps for visualization.
+    """
+    def __init__(self, values_scaled_1d: np.ndarray, time_feats: np.ndarray,
+                 dt: np.ndarray, input_len: int, pred_len: int):
         assert values_scaled_1d.ndim == 1
         assert time_feats.ndim == 2 and len(time_feats) == len(values_scaled_1d)
+        assert len(dt) == len(values_scaled_1d)
 
         self.y = values_scaled_1d.astype(np.float32)
         self.tf = time_feats.astype(np.float32)
+        self.dt = dt.astype("datetime64[ns]")
+
         self.in_len = int(input_len)
         self.out_len = int(pred_len)
         self.seq_len = self.in_len + self.out_len
@@ -270,6 +278,22 @@ class SlidingWindowDataset(Dataset):
         x = np.concatenate([past_y[:, None], past_tf], axis=1).astype(np.float32)
         y = self.y[s + self.in_len:e].astype(np.float32)
         return torch.from_numpy(x), torch.from_numpy(y)
+
+    def past_times(self, idx: int) -> np.ndarray:
+        s = idx
+        return self.dt[s:s + self.in_len]
+
+    def future_times(self, idx: int) -> np.ndarray:
+        s = idx + self.in_len
+        return self.dt[s:s + self.out_len]
+
+    def past_values_scaled(self, idx: int) -> np.ndarray:
+        s = idx
+        return self.y[s:s + self.in_len]
+
+    def future_values_scaled(self, idx: int) -> np.ndarray:
+        s = idx + self.in_len
+        return self.y[s:s + self.out_len]
 
 
 def make_loader(ds: Dataset, batch: int, shuffle: bool, num_workers: int, pin: bool, drop_last: bool) -> DataLoader:
@@ -441,6 +465,129 @@ def evaluate(model: nn.Module, loader: DataLoader, scaler: StandardScaler, devic
 
 
 # -----------------------------
+# Export sequences + plots
+# -----------------------------
+def choose_indices(n: int, k: int, strategy: str, seed: int) -> np.ndarray:
+    k = max(1, min(int(k), int(n)))
+    if strategy == "first":
+        return np.arange(k, dtype=int)
+    if strategy == "random":
+        rng = np.random.default_rng(seed)
+        return np.sort(rng.choice(n, size=k, replace=False))
+    # default: uniform
+    if k == 1:
+        return np.array([0], dtype=int)
+    return np.linspace(0, n - 1, num=k, dtype=int)
+
+
+def inv_scale_1d(scaler: StandardScaler, arr_1d: np.ndarray) -> np.ndarray:
+    return scaler.inverse_transform(arr_1d.reshape(-1, 1)).reshape(-1)
+
+
+@torch.no_grad()
+def export_samples_and_plots(
+    model: nn.Module,
+    ds: SlidingWindowDataset,
+    scaler: StandardScaler,
+    device: torch.device,
+    use_amp: bool,
+    out_dir: Path,
+    split_name: str,
+    export_k: int,
+    plot_k: int,
+    export_strategy: str,
+    seed: int,
+    infer_batch: int,
+):
+    out_dir.mkdir(parents=True, exist_ok=True)
+    plots_dir = out_dir / "plots"
+    plots_dir.mkdir(parents=True, exist_ok=True)
+
+    n = len(ds)
+    idxs = choose_indices(n, export_k, export_strategy, seed)
+
+    in_len = ds.in_len
+    out_len = ds.out_len
+
+    past_time = np.empty((len(idxs), in_len), dtype="datetime64[ns]")
+    fut_time = np.empty((len(idxs), out_len), dtype="datetime64[ns]")
+    past_true = np.empty((len(idxs), in_len), dtype=np.float32)
+    fut_true = np.empty((len(idxs), out_len), dtype=np.float32)
+    fut_pred = np.empty((len(idxs), out_len), dtype=np.float32)
+
+    model.eval()
+
+    # batched inference over chosen indices
+    ptr = 0
+    while ptr < len(idxs):
+        batch_ids = idxs[ptr:ptr + max(1, infer_batch)]
+        xs = []
+        for i in batch_ids:
+            x, _ = ds[int(i)]
+            xs.append(x)
+        xb = torch.stack(xs, dim=0).to(device, non_blocking=True)
+
+        with autocast_ctx(device, use_amp):
+            pb = model(xb)  # [B, out_len]
+        pb = pb.detach().cpu().numpy().astype(np.float32)  # scaled preds
+
+        for j, i in enumerate(batch_ids):
+            i = int(i)
+            row = ptr + j
+            pt = ds.past_times(i)
+            ft = ds.future_times(i)
+            py = ds.past_values_scaled(i)
+            fy = ds.future_values_scaled(i)
+
+            past_time[row, :] = pt
+            fut_time[row, :] = ft
+
+            past_true[row, :] = inv_scale_1d(scaler, py).astype(np.float32)
+            fut_true[row, :] = inv_scale_1d(scaler, fy).astype(np.float32)
+            fut_pred[row, :] = inv_scale_1d(scaler, pb[j]).astype(np.float32)
+
+        ptr += len(batch_ids)
+
+    npz_path = out_dir / f"{split_name}_samples.npz"
+    np.savez_compressed(
+        npz_path,
+        past_time=past_time,
+        future_time=fut_time,
+        past_true=past_true,
+        future_true=fut_true,
+        future_pred=fut_pred,
+        indices=idxs.astype(np.int32),
+    )
+
+    # plot first plot_k samples
+    kplot = max(0, min(int(plot_k), len(idxs)))
+    for s in range(kplot):
+        t_p = past_time[s]
+        t_f = fut_time[s]
+        y_p = past_true[s]
+        y_t = fut_true[s]
+        y_p2 = fut_pred[s]
+
+        plt.figure(figsize=(12, 4))
+        plt.plot(t_p.astype("datetime64[ns]"), y_p)     # past true
+        plt.plot(t_f.astype("datetime64[ns]"), y_t)     # future true
+        plt.plot(t_f.astype("datetime64[ns]"), y_p2)    # future pred
+        plt.title(f"{split_name} sample {s:03d} (idx={int(idxs[s])})")
+        plt.xticks(rotation=30, ha="right")
+        plt.tight_layout()
+        plt.savefig(plots_dir / f"{split_name}_sample_{s:03d}.png", dpi=180)
+        plt.close()
+
+    return {
+        "npz": str(npz_path),
+        "plots_dir": str(plots_dir),
+        "export_k": int(export_k),
+        "plot_k": int(plot_k),
+        "strategy": export_strategy,
+    }
+
+
+# -----------------------------
 # Auto micro-batch probing
 # -----------------------------
 def try_micro_batch(ds: Dataset, model: nn.Module, device: torch.device, micro_bs: int, use_amp: bool) -> bool:
@@ -543,8 +690,16 @@ def train_one_series(
     resume_training: bool,
     compile_model: bool,
     model_name: str,
+    export_preds: bool,
+    export_splits: List[str],
+    export_k: int,
+    plot_k: int,
+    export_strategy: str,
+    seed: int,
 ) -> Dict:
     if model_name != "PatchTST":
+        # 你说 1h/30min 用原模型：如果你的原模型脚本不是这个文件，这里会报错。
+        # 如果你把原模型也融合进同一个脚本，请在这里按 model_name 分支构建相应模型。
         raise ValueError(f"Only PatchTST is implemented in this script, got model_name={model_name}")
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -563,15 +718,16 @@ def train_one_series(
         y = df["Power_kW"].values.astype(np.float32).reshape(-1, 1)
         y_s = scaler.transform(y).reshape(-1).astype(np.float32)
         tf = make_time_features(df.index)
-        return y_s, tf
+        dt = df.index.values.astype("datetime64[ns]")
+        return y_s, tf, dt
 
-    train_y, train_tf = prep(train_df)
-    val_y, val_tf = prep(val_df)
-    test_y, test_tf = prep(test_df)
+    train_y, train_tf, train_dt = prep(train_df)
+    val_y, val_tf, val_dt = prep(val_df)
+    test_y, test_tf, test_dt = prep(test_df)
 
-    ds_train = SlidingWindowDataset(train_y, train_tf, wc.input_len, wc.pred_len)
-    ds_val = SlidingWindowDataset(val_y, val_tf, wc.input_len, wc.pred_len)
-    ds_test = SlidingWindowDataset(test_y, test_tf, wc.input_len, wc.pred_len)
+    ds_train = SlidingWindowDataset(train_y, train_tf, train_dt, wc.input_len, wc.pred_len)
+    ds_val = SlidingWindowDataset(val_y, val_tf, val_dt, wc.input_len, wc.pred_len)
+    ds_test = SlidingWindowDataset(test_y, test_tf, test_dt, wc.input_len, wc.pred_len)
 
     in_channels = 1 + train_tf.shape[1]
     mc = model_cfg_for_resolution(cfg, resolution)
@@ -651,6 +807,7 @@ def train_one_series(
 
     print(f"[CFG] patch_len={patch_len} stride={stride} n_patches={model.n_patches} | micro_bs={micro_bs} effective={effective_bs} accum={accum_steps} eval_bs={eval_bs} grad_ckpt={cfg.grad_checkpoint}")
 
+    # Train loop
     for epoch in range(start_epoch, cfg.epochs + 1):
         model.train()
         optim.zero_grad(set_to_none=True)
@@ -697,6 +854,7 @@ def train_one_series(
         updates_s = micro_it_s / accum_steps
         print(f"[THROUGHPUT] {resolution}/{building} epoch={epoch} micro_it/s={micro_it_s:.2f} samples/s={samples_s:.2f} updates/s={updates_s:.3f}")
 
+        # val loss (scaled domain)
         model.eval()
         vls = []
         with torch.no_grad():
@@ -755,10 +913,33 @@ def train_one_series(
         if patience_left <= 0:
             break
 
+    # Load best for evaluation + export
     ck_best = torch.load(best_path, map_location=device)
     model.load_state_dict(ck_best["model_state"])
+
     val_metrics = evaluate(model, dl_val, scaler, device, use_amp)
     test_metrics = evaluate(model, dl_test, scaler, device, use_amp)
+
+    exports = {}
+    if export_preds:
+        pred_dir = out_dir / "preds"
+        infer_bs = min(256, max(1, eval_bs))
+        if "val" in export_splits:
+            exports["val"] = export_samples_and_plots(
+                model=model, ds=ds_val, scaler=scaler, device=device, use_amp=use_amp,
+                out_dir=pred_dir, split_name="val",
+                export_k=export_k, plot_k=plot_k,
+                export_strategy=export_strategy, seed=seed,
+                infer_batch=infer_bs,
+            )
+        if "test" in export_splits:
+            exports["test"] = export_samples_and_plots(
+                model=model, ds=ds_test, scaler=scaler, device=device, use_amp=use_amp,
+                out_dir=pred_dir, split_name="test",
+                export_k=export_k, plot_k=plot_k,
+                export_strategy=export_strategy, seed=seed,
+                infer_batch=infer_bs,
+            )
 
     result = {
         "model": "PatchTST",
@@ -776,6 +957,7 @@ def train_one_series(
         "effective_batch": effective_bs,
         "accum_steps": accum_steps,
         "timestamp": now_str(),
+        "exports": exports,
     }
     metrics_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     return result
@@ -814,6 +996,9 @@ def compute_run_tag(args: argparse.Namespace, micro_batch: int, effective_batch:
         "max_batch": args.max_batch,
         "grad_checkpoint": args.grad_checkpoint,
         "compile": args.compile,
+        "export_preds": args.export_preds,
+        "export_k": args.export_k,
+        "export_strategy": args.export_strategy,
     }
     raw = json.dumps(cfg, sort_keys=True, ensure_ascii=True).encode("utf-8")
     h = hashlib.sha1(raw).hexdigest()[:8]
@@ -833,12 +1018,12 @@ def main():
 
     ap.add_argument("--epochs", type=int, default=30)
 
-    ap.add_argument("--micro_batch", type=int, default=None, help="micro-batch size (per step). If omitted, uses batch_size or default 64.")
-    ap.add_argument("--effective_batch", type=int, default=None, help="effective batch size via grad accumulation. If omitted, uses micro_batch/default.")
+    ap.add_argument("--micro_batch", type=int, default=None, help="micro-batch size. If omitted, uses batch_size or default 64.")
+    ap.add_argument("--effective_batch", type=int, default=None, help="effective batch via grad accumulation.")
 
     ap.add_argument("--batch_size", type=int, default=None, help="(compat) old name for micro_batch")
-    ap.add_argument("--input_len", type=int, default=0, help="(optional) override default input_len per resolution")
-    ap.add_argument("--pred_len", type=int, default=0, help="(optional) override default pred_len per resolution")
+    ap.add_argument("--input_len", type=int, default=0, help="override default input_len per resolution")
+    ap.add_argument("--pred_len", type=int, default=0, help="override default pred_len per resolution")
     ap.add_argument("--denoise_prob", type=float, default=0.0, help="(compat) accepted but ignored")
 
     ap.add_argument("--lr", type=float, default=1e-3)
@@ -879,10 +1064,17 @@ def main():
         help="If true, save each run under <out_root>/<model>/<run_tag>/... to avoid overwriting."
     )
 
+    # Export prediction sequences
+    ap.add_argument("--export_preds", action="store_true", help="export y_true/y_pred + timestamps to NPZ and plot PNG curves")
+    ap.add_argument("--export_splits", type=str, default="test", help="val/test/both (comma-separated)")
+    ap.add_argument("--export_k", type=int, default=64, help="how many windows to export per split")
+    ap.add_argument("--plot_k", type=int, default=12, help="how many exported windows to plot as PNG")
+    ap.add_argument("--export_strategy", type=str, default="uniform", choices=["uniform", "random", "first"],
+                    help="how to choose windows for export")
+
     args = ap.parse_args()
 
     fail_fast_cuda_if_needed(args.device)
-
     set_seed(args.seed)
 
     if args.device == "auto":
@@ -967,6 +1159,9 @@ def main():
     )
 
     resume_training = bool(args.resume_training or args.resume)
+    export_splits = [s.strip() for s in args.export_splits.split(",") if s.strip()]
+    if "both" in export_splits:
+        export_splits = ["val", "test"]
 
     for res in resolutions:
         if res not in DEFAULT_WINDOWS:
@@ -1018,6 +1213,12 @@ def main():
                     resume_training=resume_training,
                     compile_model=bool(args.compile),
                     model_name=str(args.model_name),
+                    export_preds=bool(args.export_preds),
+                    export_splits=export_splits,
+                    export_k=int(args.export_k),
+                    plot_k=int(args.plot_k),
+                    export_strategy=str(args.export_strategy),
+                    seed=int(args.seed),
                 )
                 summary.append(result)
                 safe_json_write(summary_path, summary)
