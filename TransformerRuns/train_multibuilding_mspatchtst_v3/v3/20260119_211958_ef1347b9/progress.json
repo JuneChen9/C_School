@@ -1,0 +1,17 @@
+{
+  "1_hour/Joint(Commercial-Office-Public-Residential)": {
+    "status": "done",
+    "end_time": "2026-01-19 21:22:49",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\1_hour"
+  },
+  "30_minutes/Joint(Commercial-Office-Public-Residential)": {
+    "status": "done",
+    "end_time": "2026-01-19 21:31:05",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\30_minutes"
+  },
+  "5_minutes/Joint(Commercial-Office-Public-Residential)": {
+    "status": "done",
+    "end_time": "2026-01-19 21:57:06",
+    "metrics_path": "C:\\Users\\13470\\Desktop\\C_school\\AfterWash\\5_minutes"
+  }
+}

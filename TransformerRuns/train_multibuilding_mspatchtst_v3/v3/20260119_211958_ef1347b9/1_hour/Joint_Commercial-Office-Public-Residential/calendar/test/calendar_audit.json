@@ -1,0 +1,32 @@
+{
+  "calendar_source": "china_official_2016_2018",
+  "calendar_years": [
+    2016,
+    2017,
+    2018
+  ],
+  "years_in_data": [
+    2018,
+    2019
+  ],
+  "missing_years": [
+    2019
+  ],
+  "holiday_days_in_data": [
+    "2018-09-24",
+    "2018-10-01",
+    "2018-10-02",
+    "2018-10-03",
+    "2018-10-04",
+    "2018-10-05",
+    "2018-10-06",
+    "2018-10-07"
+  ],
+  "workday_days_in_data": [
+    "2018-09-29",
+    "2018-09-30"
+  ],
+  "n_holiday_days_in_data": 8,
+  "n_workday_days_in_data": 2,
+  "timestamp": "2026-01-19 21:19:58"
+}
