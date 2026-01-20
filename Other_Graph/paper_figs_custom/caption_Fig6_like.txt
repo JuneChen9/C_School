@@ -1,0 +1,1 @@
+Figure X. Building-specific performance analysis. (A) Error distribution by building (violin: per-window mean MAPE). (B) Forecast error versus horizon (mean MAPE at each step). (C) Performance across temporal resolutions (test MAPE from metrics.json). (D) Seasonal performance variation (monthly mean MAPE with 95% CI).
