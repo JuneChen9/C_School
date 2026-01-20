@@ -1,0 +1,11 @@
+{
+  "calendar_mode": "china_official",
+  "holiday_table_path": "",
+  "use_rolling": true,
+  "rolling_windows": "1d,7d",
+  "add_mask_channels": true,
+  "mask_impute": true,
+  "impute_method": "time",
+  "imputed_target_weight": 0.25,
+  "timestamp": "2026-01-20 17:35:43"
+}
